@@ -50,11 +50,47 @@ ul {
 
 
 /* ============================
+   MARQUEE
+   ============================ */
+.marquee {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 34px;
+    background-color: #c9a84c;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    z-index: 200;
+}
+
+.marquee__track {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee-scroll 22s linear infinite;
+}
+
+.marquee__texto {
+    font-family: var(--fuente-sans);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: #ffffff;
+}
+
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+
+/* ============================
    NAVBAR
    ============================ */
 .navbar {
     position: fixed;
-    top: 0;
+    top: 34px;
     left: 0;
     width: 100%;
     z-index: 100;
