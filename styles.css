@@ -58,7 +58,7 @@ ul {
     left: 0;
     width: 100%;
     height: 34px;
-    background-color: #c9a84c;
+    background-color: #e8d9c0;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -68,7 +68,7 @@ ul {
 .marquee__track {
     display: flex;
     white-space: nowrap;
-    animation: marquee-scroll 22s linear infinite;
+    animation: marquee-scroll 40s linear infinite;
 }
 
 .marquee__texto {
@@ -114,7 +114,7 @@ ul {
     font-size: 1.8rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    color: var(--color-oro);
+    color: #e0ccb0;
 }
 
 .navbar__list {
@@ -134,6 +134,107 @@ ul {
 
 .navbar__link:hover {
     color: var(--color-oro);
+}
+
+.navbar__derecha {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.busqueda-wrapper {
+    position: relative;
+}
+
+.busqueda {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #c9b89a;
+    padding-bottom: 2px;
+    transition: border-color var(--transicion);
+}
+
+.busqueda:focus-within {
+    border-color: var(--color-oro);
+}
+
+.busqueda__icono {
+    width: 14px;
+    height: 14px;
+    color: #a89070;
+    flex-shrink: 0;
+    transition: color var(--transicion);
+}
+
+.busqueda:focus-within .busqueda__icono {
+    color: var(--color-oro);
+}
+
+.busqueda__input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--fuente-sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--color-texto);
+    width: 110px;
+    transition: width var(--transicion);
+}
+
+.busqueda__input::placeholder {
+    color: #b8a898;
+}
+
+.busqueda__input:focus {
+    width: 160px;
+}
+
+/* ocultar el botón x nativo de input[type=search] */
+.busqueda__input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.sugerencias {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    min-width: 200px;
+    background-color: #ffffff;
+    border: 1px solid var(--color-beige-mid);
+    list-style: none;
+    z-index: 300;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+}
+
+.sugerencias--visible {
+    display: block;
+}
+
+.sugerencias__item {
+    padding: 0.65rem 1rem;
+    font-family: var(--fuente-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: background-color var(--transicion), color var(--transicion);
+}
+
+.sugerencias__item:hover {
+    background-color: var(--color-beige);
+    color: var(--color-oro);
+}
+
+.card--oculta {
+    display: none;
+}
+
+.productos--oculta {
+    display: none;
 }
 
 
