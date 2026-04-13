@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Franchus Jewelry — Joyería Fina</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Cormorant+Garamond:ital@1&family=Bodoni+Moda:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -40,9 +40,179 @@
                         <li><a href="#" class="navbar__link" data-categoria="pulseras">Pulseras</a></li>
                     </ul>
                 </nav>
+                <button class="carrito__btn" id="carrito-btn" aria-label="Ver carrito">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+                    </svg>
+                    <span class="carrito__badge" id="carrito-badge">0</span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- CARRITO PANEL -->
+    <div class="carrito-overlay" id="carrito-overlay"></div>
+    <aside class="carrito-panel" id="carrito-panel">
+        <div class="carrito-panel__header">
+            <h2 class="carrito-panel__titulo">Tu carrito</h2>
+            <button class="carrito-panel__cerrar" id="carrito-cerrar" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="carrito-panel__items" id="carrito-items"></div>
+        <div class="carrito-panel__footer" id="carrito-footer">
+            <div class="carrito-panel__total">
+                <span>Total</span>
+                <span id="carrito-total">$0</span>
+            </div>
+            <button class="carrito-panel__checkout">Finalizar compra</button>
+        </div>
+        <div class="carrito-panel__vacio" id="carrito-vacio">
+            <p>Tu carrito está vacío.</p>
+        </div>
+    </aside>
+
+    <!-- MODAL DETALLE DE PRODUCTO -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-producto" id="modal-producto" role="dialog" aria-modal="true">
+        <button class="modal-producto__cerrar" id="modal-cerrar" aria-label="Cerrar">&times;</button>
+        <div class="modal-producto__cuerpo">
+            <div class="modal-producto__galeria">
+                <div class="modal-producto__img-wrapper" id="modal-img-wrapper">
+                    <img class="modal-producto__img" id="modal-img" src="" alt="">
+                    <img class="modal-producto__img-hover" id="modal-img-hover" src="" alt="">
+                </div>
+            </div>
+            <div class="modal-producto__info">
+                <span class="modal-producto__categoria" id="modal-categoria"></span>
+                <h2 class="modal-producto__nombre" id="modal-nombre"></h2>
+                <p class="modal-producto__descripcion" id="modal-descripcion"></p>
+                <p class="modal-producto__material">Acero inoxidable bañado en oro 18k</p>
+                <div class="modal-producto__precio-fila">
+                    <span class="modal-producto__precio" id="modal-precio"></span>
+                    <span class="modal-producto__cuotas">3 cuotas sin interés</span>
+                </div>
+                <button class="modal-producto__agregar" id="modal-agregar">Agregar al carrito</button>
+                <div class="modal-producto__detalles">
+                    <p>✓ Envío gratis desde $80.000</p>
+                    <p>✓ 20% OFF pagando con transferencia</p>
+                    <p>✓ Devolución dentro de los 15 días</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT -->
+    <div class="checkout-overlay" id="checkout-overlay"></div>
+    <div class="checkout-modal" id="checkout-modal" role="dialog" aria-modal="true">
+        <button class="checkout-modal__cerrar" id="checkout-cerrar" aria-label="Cerrar">&times;</button>
+
+        <div class="checkout-pasos" id="checkout-pasos">
+            <div class="checkout-paso" data-paso="1">
+                <span class="checkout-paso__num">1</span>
+                <span class="checkout-paso__label">Envío</span>
+            </div>
+            <span class="checkout-paso__linea"></span>
+            <div class="checkout-paso" data-paso="2">
+                <span class="checkout-paso__num">2</span>
+                <span class="checkout-paso__label">Pago</span>
+            </div>
+            <span class="checkout-paso__linea"></span>
+            <div class="checkout-paso" data-paso="3">
+                <span class="checkout-paso__num">3</span>
+                <span class="checkout-paso__label">Confirmar</span>
+            </div>
+        </div>
+
+        <!-- Paso 1: Datos de envío -->
+        <div class="checkout-step" id="checkout-step-1">
+            <h2 class="checkout-step__titulo">Datos de envío</h2>
+            <div class="checkout-form__grid">
+                <div class="checkout-field">
+                    <label class="checkout-field__label" for="ch-nombre">Nombre *</label>
+                    <input type="text" class="checkout-field__input" id="ch-nombre" placeholder="Tu nombre">
+                </div>
+                <div class="checkout-field">
+                    <label class="checkout-field__label" for="ch-apellido">Apellido</label>
+                    <input type="text" class="checkout-field__input" id="ch-apellido" placeholder="Tu apellido">
+                </div>
+                <div class="checkout-field checkout-field--full">
+                    <label class="checkout-field__label" for="ch-email">Email *</label>
+                    <input type="email" class="checkout-field__input" id="ch-email" placeholder="tu@email.com">
+                </div>
+                <div class="checkout-field checkout-field--full">
+                    <label class="checkout-field__label" for="ch-telefono">Teléfono</label>
+                    <input type="tel" class="checkout-field__input" id="ch-telefono" placeholder="+54 11 0000-0000">
+                </div>
+                <div class="checkout-field checkout-field--full">
+                    <label class="checkout-field__label" for="ch-direccion">Dirección *</label>
+                    <input type="text" class="checkout-field__input" id="ch-direccion" placeholder="Calle y número">
+                </div>
+                <div class="checkout-field">
+                    <label class="checkout-field__label" for="ch-ciudad">Ciudad</label>
+                    <input type="text" class="checkout-field__input" id="ch-ciudad" placeholder="Ciudad">
+                </div>
+                <div class="checkout-field">
+                    <label class="checkout-field__label" for="ch-provincia">Provincia</label>
+                    <input type="text" class="checkout-field__input" id="ch-provincia" placeholder="Provincia">
+                </div>
+                <div class="checkout-field checkout-field--full">
+                    <label class="checkout-field__label" for="ch-cp">Código Postal</label>
+                    <input type="text" class="checkout-field__input" id="ch-cp" placeholder="0000">
+                </div>
+            </div>
+            <p class="checkout-error" id="checkout-error-1"></p>
+            <button class="checkout-btn" id="checkout-paso1-sig">Continuar al pago</button>
+        </div>
+
+        <!-- Paso 2: Método de pago -->
+        <div class="checkout-step" id="checkout-step-2">
+            <h2 class="checkout-step__titulo">Método de pago</h2>
+            <div class="checkout-metodos">
+                <label class="checkout-metodo">
+                    <input type="radio" name="pago" value="transferencia" checked>
+                    <div class="checkout-metodo__contenido">
+                        <div class="checkout-metodo__fila">
+                            <span class="checkout-metodo__nombre">Transferencia bancaria</span>
+                            <span class="checkout-metodo__badge">20% OFF</span>
+                        </div>
+                        <span class="checkout-metodo__desc">Alias: franchus.joyas · CBU: 0000 1234 5678 9012</span>
+                    </div>
+                </label>
+                <label class="checkout-metodo">
+                    <input type="radio" name="pago" value="mercadopago">
+                    <div class="checkout-metodo__contenido">
+                        <span class="checkout-metodo__nombre">MercadoPago</span>
+                        <span class="checkout-metodo__desc">3 cuotas sin interés con tarjeta seleccionada</span>
+                    </div>
+                </label>
+                <label class="checkout-metodo">
+                    <input type="radio" name="pago" value="efectivo">
+                    <div class="checkout-metodo__contenido">
+                        <span class="checkout-metodo__nombre">Efectivo</span>
+                        <span class="checkout-metodo__desc">Coordinar retiro o entrega personal en Vicente López</span>
+                    </div>
+                </label>
+            </div>
+            <div class="checkout-total-preview">
+                <span id="checkout-total-label">Total</span>
+                <span id="checkout-total-val">$0</span>
+            </div>
+            <div class="checkout-nav">
+                <button class="checkout-btn checkout-btn--outline" id="checkout-paso2-ant">Volver</button>
+                <button class="checkout-btn" id="checkout-paso2-sig">Confirmar pedido</button>
+            </div>
+        </div>
+
+        <!-- Paso 3: Confirmación -->
+        <div class="checkout-step" id="checkout-step-3">
+            <div class="checkout-exito">
+                <div class="checkout-exito__icono">✓</div>
+                <h2 class="checkout-exito__titulo">¡Pedido confirmado!</h2>
+                <p class="checkout-exito__subtitulo">Te enviamos los detalles a <strong id="checkout-email-conf"></strong></p>
+                <div class="checkout-resumen" id="checkout-resumen"></div>
+                <button class="checkout-btn" id="checkout-finalizar">Volver a la tienda</button>
+            </div>
+        </div>
+    </div>
 
     <main>
 
@@ -265,7 +435,17 @@
                 </div>
             </div>
 
+            <div class="footer__novedades">
+                <h4 class="footer__titulo">Novedades Franchus</h4>
+                <div class="novedades__form" id="novedades-form">
+                    <input class="novedades__input" type="email" id="novedades-email" placeholder="Tu email..." autocomplete="off">
+                    <button class="novedades__btn" id="novedades-enviar">Suscribirme</button>
+                </div>
+                <p class="novedades__gracias" id="novedades-gracias">¡Gracias! Te avisamos de las novedades.</p>
+            </div>
+
         </div>
+
         <p class="footer__copy">&copy; 2026 Franchus Jewelry. Todos los derechos reservados.</p>
     </footer>
 
