@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Franchus Jewelry — Joyería Fina</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
     <!-- NAVBAR -->
     <header class="navbar">
         <div class="navbar__container">
-            <a href="#" class="navbar__logo">Franchus</a>
+            <a href="#" class="navbar__logo" id="logo-link">Franchus</a>
             <div class="navbar__derecha">
                 <div class="busqueda-wrapper">
                     <div class="busqueda">
@@ -35,9 +35,9 @@
                 </div>
                 <nav class="navbar__nav">
                     <ul class="navbar__list">
-                        <li><a href="#aros" class="navbar__link">Aros</a></li>
-                        <li><a href="#collares" class="navbar__link">Collares</a></li>
-                        <li><a href="#pulseras" class="navbar__link">Pulseras</a></li>
+                        <li><a href="#" class="navbar__link" data-categoria="aros">Aros</a></li>
+                        <li><a href="#" class="navbar__link" data-categoria="collares">Collares</a></li>
+                        <li><a href="#" class="navbar__link" data-categoria="pulseras">Pulseras</a></li>
                     </ul>
                 </nav>
             </div>
@@ -51,14 +51,52 @@
             <div class="hero__overlay"></div>
             <div class="hero__content">
                 <p class="hero__subtitle">Nueva Colección 2026</p>
-                <h1 class="hero__title">El lujo que<br><em>te define</em></h1>
-                <a href="#productos" class="hero__btn">Explorar colección</a>
+                <h1 class="hero__title">El detalle que<br><em>te enamora</em></h1>
+                <a href="#" class="hero__btn" id="btn-explorar">Explorar colección</a>
             </div>
         </section>
 
-        <!-- INTRO -->
-        <section class="intro">
-            <p class="intro__text">Cada pieza está diseñada con materiales de calidad, pensada para acompañarte en cada momento especial.</p>
+        <!-- TAGLINE -->
+        <section class="tagline">
+            <p class="tagline__texto">Cada pieza está hecha en acero inoxidable bañado en oro — para que brilles sin preocuparte.</p>
+        </section>
+
+        <!-- NUESTROS FAVORITOS -->
+        <section class="favoritos" id="favoritos">
+            <p class="favoritos__label">Nuestros Favoritos</p>
+            <div class="favoritos__grilla">
+
+                <article class="card" data-categoria="aros">
+                    <figure class="card__img-wrapper">
+                        <img src="catalogo/aro-honguito.png" alt="Aro Honguito" class="card__img">
+                    </figure>
+                    <div class="card__info">
+                        <h3 class="card__nombre">Aro Honguito</h3>
+                        <span class="card__precio">$20.000</span>
+                    </div>
+                </article>
+
+                <article class="card" data-categoria="aros">
+                    <figure class="card__img-wrapper">
+                        <img src="catalogo/aro-brillis.png" alt="Aro Brillis" class="card__img">
+                    </figure>
+                    <div class="card__info">
+                        <h3 class="card__nombre">Aro Brillis</h3>
+                        <span class="card__precio">$25.000</span>
+                    </div>
+                </article>
+
+                <article class="card" data-categoria="collares">
+                    <figure class="card__img-wrapper">
+                        <img src="catalogo/collar-diamond.png" alt="Collar Diamond" class="card__img">
+                    </figure>
+                    <div class="card__info">
+                        <h3 class="card__nombre">Collar Diamond</h3>
+                        <span class="card__precio">$28.000</span>
+                    </div>
+                </article>
+
+            </div>
         </section>
 
         <!-- PRODUCTOS: AROS -->
@@ -69,7 +107,7 @@
             </div>
             <div class="productos__grilla">
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-rayito.png" alt="Aro Rayito" class="card__img">
                     </figure>
@@ -79,7 +117,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-flower.png" alt="Aro Flower" class="card__img">
                     </figure>
@@ -89,7 +127,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-honguito.png" alt="Aro Honguito" class="card__img">
                     </figure>
@@ -99,7 +137,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-brillis.png" alt="Aro Brillis" class="card__img">
                     </figure>
@@ -109,7 +147,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-diamond.png" alt="Aro Diamond" class="card__img">
                     </figure>
@@ -119,7 +157,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="aros">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/aro-cora.png" alt="Aro Cora" class="card__img">
                     </figure>
@@ -140,7 +178,7 @@
             </div>
             <div class="productos__grilla">
 
-                <article class="card">
+                <article class="card" data-categoria="collares">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/collar-cora.png" alt="Collar Cora" class="card__img">
                     </figure>
@@ -150,7 +188,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="collares">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/collar-diamond.png" alt="Collar Diamond" class="card__img">
                     </figure>
@@ -171,7 +209,7 @@
             </div>
             <div class="productos__grilla">
 
-                <article class="card">
+                <article class="card" data-categoria="pulseras">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/pulsera-estrella.png" alt="Pulsera Estrella" class="card__img">
                     </figure>
@@ -181,7 +219,7 @@
                     </div>
                 </article>
 
-                <article class="card">
+                <article class="card" data-categoria="pulseras">
                     <figure class="card__img-wrapper">
                         <img src="catalogo/pulsera-ojitos.png" alt="Pulsera Ojitos" class="card__img">
                     </figure>
@@ -213,7 +251,7 @@
             <div class="footer__contacto">
                 <h4 class="footer__titulo">Contacto</h4>
                 <ul class="footer__lista">
-                    <li><a href="mailto:hola@lumiere.com.ar" class="footer__link">hola@lumiere.com.ar</a></li>
+                    <li><a href="mailto:franchus.accesorios@gmail.com" class="footer__link">franchus.accesorios@gmail.com</a></li>
                     <li><a href="https://wa.me/5491100000000" class="footer__link" target="_blank">WhatsApp</a></li>
                 </ul>
             </div>

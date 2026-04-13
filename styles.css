@@ -136,6 +136,12 @@ ul {
     color: var(--color-oro);
 }
 
+.navbar__link--activo {
+    color: var(--color-oro);
+    border-bottom: 1px solid var(--color-oro);
+    padding-bottom: 2px;
+}
+
 .navbar__derecha {
     display: flex;
     align-items: center;
@@ -244,8 +250,7 @@ ul {
 .hero {
     position: relative;
     height: 100vh;
-    min-height: 600px;
-    background-image: url('catalogo/fondo.png');
+    background-image: url('catalogo/fondo-lino.jpg');
     background-size: cover;
     background-position: center 40%;
     display: flex;
@@ -269,6 +274,8 @@ ul {
     z-index: 1;
     color: var(--color-blanco);
     padding: 2rem;
+    padding-top: 104px;
+    max-width: 576px;
 }
 
 .hero__subtitle {
@@ -277,13 +284,15 @@ ul {
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--color-oro-claro);
-    margin-bottom: 1.2rem;
+    margin-top: calc(3cm - 20px);
+    margin-bottom: 2cm;
 }
 
 .hero__title {
-    font-family: var(--fuente-serif);
-    font-size: clamp(3rem, 7vw, 5.5rem);
-    font-weight: 300;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(3.7rem, 7.5vw, 6.2rem);
+    font-weight: 400;
     line-height: 1.15;
     margin-bottom: 2rem;
 }
@@ -293,8 +302,30 @@ ul {
     color: var(--color-oro-claro);
 }
 
+.hero__deco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.hero__deco-rombo {
+    font-size: 0.45rem;
+    color: #c9a84c;
+    line-height: 1;
+}
+
+.hero__deco-linea {
+    display: block;
+    width: 60px;
+    height: 1px;
+    background-color: #c9a84c;
+}
+
 .hero__btn {
     display: inline-block;
+    margin-top: 1.4rem;
     padding: 0.85rem 2.4rem;
     border: 1px solid var(--color-oro-claro);
     color: var(--color-blanco);
@@ -313,11 +344,62 @@ ul {
 
 
 /* ============================
+   CATÁLOGO — VISIBILIDAD POR DEFECTO
+   ============================ */
+section.productos,
+section.banner {
+    display: none;
+}
+
+body.catalogo-abierto section.productos,
+body.catalogo-abierto section.banner {
+    display: block;
+    animation: catalogo-fadein 0.45s ease forwards;
+}
+
+/* Las secciones filtradas como vacías siguen ocultas aunque el catálogo esté abierto */
+body.catalogo-abierto section.productos.productos--oculta {
+    display: none;
+}
+
+@keyframes catalogo-fadein {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ============================
+   TAGLINE
+   ============================ */
+.tagline {
+    background-color: #f5f0e8;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.tagline__texto {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #3a3a3a;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .tagline {
+        padding: 1.5rem 1.2rem;
+    }
+}
+
+
+/* ============================
    INTRO
    ============================ */
 .intro {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 1.8rem 2rem;
     background-color: var(--color-beige);
 }
 
@@ -330,6 +412,38 @@ ul {
     max-width: 640px;
     margin: 0 auto;
     letter-spacing: 0.02em;
+}
+
+
+/* ============================
+   FAVORITOS
+   ============================ */
+.favoritos {
+    background-color: #f5f0e8;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.favoritos__label {
+    font-family: var(--fuente-sans);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-oro);
+    margin-bottom: 2.5rem;
+}
+
+.favoritos__grilla {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.favoritos--oculta {
+    display: none;
 }
 
 
@@ -556,6 +670,10 @@ ul {
    RESPONSIVE
    ============================ */
 @media (max-width: 768px) {
+    .hero {
+        height: 70vh;
+    }
+
     .navbar__container {
         padding: 0 1.2rem;
     }
@@ -579,6 +697,12 @@ ul {
     .productos__grilla {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .favoritos__grilla {
+        grid-template-columns: 1fr;
     }
 }
 
