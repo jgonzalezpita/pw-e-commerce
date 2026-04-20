@@ -84,6 +84,22 @@ export default function Page() {
     }
   }, []);
 
+  const handleSugerenciaSeleccionada = useCallback((producto) => {
+    // Asegurarse de que el catálogo esté abierto y el producto visible
+    setCatalogoAbierto(true);
+    setCategoriaActiva(null);
+
+    // Esperar a que React renderice las secciones antes de hacer scroll
+    setTimeout(() => {
+      const id = producto.nombre.toLowerCase().replace(/\s+/g, '-');
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('card--resaltada');
+      setTimeout(() => el.classList.remove('card--resaltada'), 1500);
+    }, 100);
+  }, []);
+
   // productos filtrados para cada sección
   const filtrar = (cat) =>
     productos.filter(p => {
@@ -107,6 +123,7 @@ export default function Page() {
         onCategoria={handleCategoria}
         query={query}
         onQuery={handleQuery}
+        onSugerenciaSeleccionada={handleSugerenciaSeleccionada}
         carritoCount={carrito.reduce((a, i) => a + i.cantidad, 0)}
         onAbrirCarrito={() => setCarritoAbierto(true)}
       />

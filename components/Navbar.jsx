@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { productos } from '@/data/productos';
 
-export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, carritoCount, onAbrirCarrito }) {
+export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, onSugerenciaSeleccionada, carritoCount, onAbrirCarrito }) {
   const [sugerencias, setSugerencias] = useState([]);
   const [mostrarSug, setMostrarSug] = useState(false);
   const wrapperRef = useRef(null);
@@ -37,6 +37,7 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, c
     onQuery(p.nombre);
     setSugerencias([]);
     setMostrarSug(false);
+    if (onSugerenciaSeleccionada) onSugerenciaSeleccionada(p);
   }
 
   const cats = ['aros', 'collares', 'pulseras'];

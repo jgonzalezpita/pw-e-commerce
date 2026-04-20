@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 
 function formatPrecio(n) {
   return '$' + n.toLocaleString('es-AR');
@@ -56,13 +56,13 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
             const num = i + 1;
             const cls = num === paso ? 'checkout-paso--activo' : num < paso ? 'checkout-paso--hecho' : '';
             return (
-              <>
-                <div key={num} className={`checkout-paso ${cls}`} data-paso={num}>
+              <Fragment key={num}>
+                <div className={`checkout-paso ${cls}`} data-paso={num}>
                   <span className="checkout-paso__num">{num}</span>
                   <span className="checkout-paso__label">{label}</span>
                 </div>
-                {i < pasos.length - 1 && <span key={`linea-${i}`} className="checkout-paso__linea"></span>}
-              </>
+                {i < pasos.length - 1 && <span className="checkout-paso__linea"></span>}
+              </Fragment>
             );
           })}
         </div>

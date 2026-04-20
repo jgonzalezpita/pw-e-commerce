@@ -7,6 +7,10 @@ function getHoverSrc(src) {
   return src.slice(0, dot) + '-m' + src.slice(dot);
 }
 
+function toCardId(nombre) {
+  return nombre.toLowerCase().replace(/\s+/g, '-');
+}
+
 export default function ProductCard({ producto, onProductoClick, onAgregar }) {
   const { nombre, precio, imagen, categoria } = producto;
   const hoverSrc = getHoverSrc(imagen);
@@ -17,6 +21,7 @@ export default function ProductCard({ producto, onProductoClick, onAgregar }) {
 
   return (
     <article
+      id={toCardId(nombre)}
       className="card"
       data-categoria={categoria}
       onClick={() => onProductoClick(producto)}

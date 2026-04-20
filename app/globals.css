@@ -637,19 +637,11 @@ ul {
 
 /* ============================
    CATÁLOGO — VISIBILIDAD POR DEFECTO
+   React maneja la visibilidad condicionalmente, solo necesitamos la animación
    ============================ */
 section.productos {
-    display: none;
-}
-
-body.catalogo-abierto section.productos {
     display: block;
     animation: catalogo-fadein 0.45s ease forwards;
-}
-
-/* Las secciones filtradas como vacías siguen ocultas aunque el catálogo esté abierto */
-body.catalogo-abierto section.productos.productos--oculta {
-    display: none;
 }
 
 @keyframes catalogo-fadein {
@@ -792,6 +784,12 @@ body.catalogo-abierto section.productos.productos--oculta {
 .card:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.card--resaltada {
+    box-shadow: 0 0 0 3px #c9a84c, 0 12px 32px rgba(201, 168, 76, 0.25);
+    transform: translateY(-4px);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .card__img-wrapper {
