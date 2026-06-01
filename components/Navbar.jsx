@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { productos } from '@/data/productos';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
-export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, onSugerenciaSeleccionada, carritoCount, onAbrirCarrito }) {
+export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, onSugerenciaSeleccionada, carritoCount, onAbrirCarrito, usuario, productos = [] }) {
   const [sugerencias, setSugerencias] = useState([]);
   const [mostrarSug, setMostrarSug] = useState(false);
   const wrapperRef = useRef(null);
@@ -38,6 +39,10 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
     setSugerencias([]);
     setMostrarSug(false);
     if (onSugerenciaSeleccionada) onSugerenciaSeleccionada(p);
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
   }
 
   const cats = ['aros', 'collares', 'pulseras'];
@@ -101,6 +106,30 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
               ))}
             </ul>
           </nav>
+
+          {usuario ? (
+            <>
+              {usuario.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+                <Link href="/admin" className="navbar__auth-btn navbar__auth-btn--admin">
+                  Admin
+                </Link>
+              )}
+              <Link href="/ordenes" className="navbar__auth-btn">
+                Mis órdenes
+              </Link>
+              <button
+                className="navbar__auth-btn"
+                onClick={handleLogout}
+                title={`Sesión: ${usuario.email}`}
+              >
+                Salir
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/login" className="navbar__auth-btn">
+              Ingresar
+            </Link>
+          )}
 
           <button className="carrito__btn" onClick={onAbrirCarrito} aria-label="Ver carrito">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
