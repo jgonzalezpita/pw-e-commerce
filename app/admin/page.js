@@ -20,7 +20,7 @@ export default async function AdminPage() {
   if (!user) redirect('/auth/login');
 
   // Verificar que sea admin
-  if (user.email !== process.env.ADMIN_EMAIL) redirect('/');
+  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) redirect('/');
 
   // Obtener todas las órdenes con datos de usuario (usando service role)
   const { data: ordenes } = await supabaseAdmin
