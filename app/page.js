@@ -21,7 +21,6 @@ export default function Page() {
   const [carrito, setCarrito] = useState([]);
   const [carritoAbierto, setCarritoAbierto] = useState(false);
   const [checkoutAbierto, setCheckoutAbierto] = useState(false);
-  const [ordenPendiente, setOrdenPendiente] = useState(null);
 
   // ── Inicialización ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -91,17 +90,6 @@ export default function Page() {
       localStorage.setItem('franchus-carrito', JSON.stringify(carrito));
     }
   }, [carrito, usuario]);
-
-  // ── Guardar orden en Supabase ─────────────────────────────────────────────
-  useEffect(() => {
-    if (!ordenPendiente || !usuario) return;
-    const ejecutar = async () => {
-      await supabase.from('ordenes').insert(ordenPendiente);
-      await supabase.from('carrito').delete().eq('usuario_id', usuario.id);
-      setOrdenPendiente(null);
-    };
-    ejecutar();
-  }, [ordenPendiente, usuario]);
 
   // ── Operaciones del carrito ───────────────────────────────────────────────
   const agregarAlCarrito = useCallback(async (producto) => {
@@ -264,9 +252,14 @@ export default function Page() {
         <ModalCheckout
           carrito={carrito}
           onCerrar={() => setCheckoutAbierto(false)}
-          onConfirmar={() => {
-            const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-            if (usuario) setOrdenPendiente({ usuario_id: usuario.id, total });
+          onConfirmar={async () => {
+            try {
+              const res = await fetch('/api/ordenes', { method: 'POST' });
+              if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || 'Error al crear la orden');
+              }
+            } catch (_) {}
             setCarrito([]);
             setCheckoutAbierto(false);
           }}
