@@ -19,8 +19,14 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login');
 
-  // Verificar que sea admin
-  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) redirect('/');
+  // Verificar rol 'admin' en la tabla usuarios (usa supabaseAdmin para bypasear RLS)
+  const { data: perfil } = await supabaseAdmin
+    .from('usuarios')
+    .select('rol')
+    .eq('id', user.id)
+    .single();
+
+  if (perfil?.rol !== 'admin') redirect('/');
 
   // Obtener todas las órdenes (usando service role para bypasear RLS)
   const { data: ordenes, error } = await supabaseAdmin
