@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Login() {
@@ -10,7 +9,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +20,7 @@ export default function Login() {
       if (error) {
         setError(error.message);
       } else {
-        router.push('/');
+        window.location.href = '/';
       }
     } catch (err) {
       setError('Error al iniciar sesión. Intentá de nuevo.');

@@ -7,7 +7,16 @@ import { supabase } from '@/lib/supabase';
 export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, onSugerenciaSeleccionada, carritoCount, onAbrirCarrito, usuario, productos = [] }) {
   const [sugerencias, setSugerencias] = useState([]);
   const [mostrarSug, setMostrarSug] = useState(false);
+  const [rolUsuario, setRolUsuario] = useState(null);
   const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    if (!usuario) { setRolUsuario(null); return; }
+    fetch('/api/auth/rol')
+      .then(r => r.json())
+      .then(d => setRolUsuario(d.rol))
+      .catch(() => {});
+  }, [usuario]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -43,6 +52,7 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    window.location.href = '/';
   }
 
   const cats = ['aros', 'collares', 'pulseras'];
@@ -109,9 +119,9 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
 
           {usuario ? (
             <>
-              {usuario.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+              {rolUsuario === 'admin' && (
                 <Link href="/admin" className="navbar__auth-btn navbar__auth-btn--admin">
-                  Admin
+                  ⚙ Panel admin
                 </Link>
               )}
               <Link href="/ordenes" className="navbar__auth-btn">

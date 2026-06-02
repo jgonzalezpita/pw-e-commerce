@@ -18,66 +18,51 @@ export default function Page() {
   const [productos, setProductos] = useState(productosFallback);
 
   // ── Carrito ──────────────────────────────────────────────────────────────
-  const [carrito, setCarrito] = useState([]);
+  // Lazy initializer: lee localStorage en el primer render para no sobreescribirlo
+  const [carrito, setCarrito] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('franchus-carrito');
+      return saved ? JSON.parse(saved) : [];
+    } catch (_) { return []; }
+  });
   const [carritoAbierto, setCarritoAbierto] = useState(false);
   const [checkoutAbierto, setCheckoutAbierto] = useState(false);
-  const [ordenPendiente, setOrdenPendiente] = useState(null);
 
   // ── Inicialización ────────────────────────────────────────────────────────
   useEffect(() => {
     async function cargarProductos() {
       try {
-        const { data } = await supabase.from('productos').select();
+        const { data } = await supabase.from('productos').select().eq('activo', true);
         if (data && data.length > 0) {
           setProductos(data.map(p => ({ ...p, imagen: p.imagen_url || p.imagen })));
         }
       } catch (_) {}
     }
 
-    async function cargarCarritoSupabase(userId) {
-      const { data } = await supabase
-        .from('carrito')
-        .select('producto_id, cantidad')
-        .eq('usuario_id', userId);
-
-      if (data && data.length > 0) {
-        const { data: prods } = await supabase.from('productos').select();
-        const catalogo = prods || productosFallback;
-        setCarrito(data.map(item => {
-          const prod = catalogo.find(p => p.id === item.producto_id);
-          return prod ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad } : null;
-        }).filter(Boolean));
-      }
-    }
-
-    function cargarCarritoLocal() {
+    // Carga el carrito desde el servidor — el server lee las cookies correctamente
+    // y evita cualquier problema de JWT en el cliente (ej. en refresh de página)
+    async function cargarCarritoSupabase() {
       try {
-        const guardado = localStorage.getItem('franchus-carrito');
-        if (guardado) setCarrito(JSON.parse(guardado));
+        const res = await fetch('/api/carrito');
+        if (!res.ok) return;
+        const items = await res.json();
+        setCarrito(items);
       } catch (_) {}
     }
 
     cargarProductos();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const user = session?.user ?? null;
-      setUsuario(user);
-      if (user) {
-        cargarCarritoSupabase(user.id);
-      } else {
-        cargarCarritoLocal();
-      }
-    }).catch(() => cargarCarritoLocal());
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         const user = session?.user ?? null;
         setUsuario(user);
         if (user) {
-          await cargarCarritoSupabase(user.id);
-        } else {
+          await cargarCarritoSupabase();
+        } else if (event === 'SIGNED_OUT') {
+          // Solo limpiar al cerrar sesión explícitamente; INITIAL_SESSION sin user
+          // ya tiene el carrito de localStorage via lazy initializer
           setCarrito([]);
-          cargarCarritoLocal();
         }
       }
     );
@@ -91,17 +76,6 @@ export default function Page() {
       localStorage.setItem('franchus-carrito', JSON.stringify(carrito));
     }
   }, [carrito, usuario]);
-
-  // ── Guardar orden en Supabase ─────────────────────────────────────────────
-  useEffect(() => {
-    if (!ordenPendiente || !usuario) return;
-    const ejecutar = async () => {
-      await supabase.from('ordenes').insert(ordenPendiente);
-      await supabase.from('carrito').delete().eq('usuario_id', usuario.id);
-      setOrdenPendiente(null);
-    };
-    ejecutar();
-  }, [ordenPendiente, usuario]);
 
   // ── Operaciones del carrito ───────────────────────────────────────────────
   const agregarAlCarrito = useCallback(async (producto) => {
@@ -118,20 +92,13 @@ export default function Page() {
     setCarritoAbierto(true);
 
     if (usuario) {
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from('carrito')
-        .insert({ usuario_id: usuario.id, producto_id: producto.id, cantidad: nuevaCantidad });
-
-      if (insertError) console.error('Carrito insert error:', insertError.code, insertError.message);
-      if (insertError?.code === '23505') {
-        await supabase
-          .from('carrito')
-          .update({ cantidad: nuevaCantidad })
-          .eq('usuario_id', usuario.id)
-          .eq('producto_id', producto.id);
-      }
-    } else {
-      console.log('usuario es null, no se guarda');
+        .upsert(
+          { usuario_id: usuario.id, producto_id: producto.id, cantidad: nuevaCantidad },
+          { onConflict: 'usuario_id,producto_id' }
+        );
+      if (error) console.error('Carrito upsert error:', error.message);
     }
   }, [usuario, carrito]);
 
@@ -271,9 +238,14 @@ export default function Page() {
         <ModalCheckout
           carrito={carrito}
           onCerrar={() => setCheckoutAbierto(false)}
-          onConfirmar={() => {
-            const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-            if (usuario) setOrdenPendiente({ usuario_id: usuario.id, total });
+          onConfirmar={async () => {
+            try {
+              const res = await fetch('/api/ordenes', { method: 'POST' });
+              if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || 'Error al crear la orden');
+              }
+            } catch (_) {}
             setCarrito([]);
             setCheckoutAbierto(false);
           }}

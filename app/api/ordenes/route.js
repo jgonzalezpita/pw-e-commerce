@@ -19,11 +19,10 @@ export async function GET() {
 export async function POST() {
   const supabase = await createSupabaseServer();
 
-  // Verificar autenticación
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
 
-  // Obtener items del carrito con detalles de productos
+  // Obtener items del carrito con precios
   const { data: carritoItems, error: carritoError } = await supabase
     .from('carrito')
     .select('producto_id, cantidad, productos(id, nombre, precio, stock)')
@@ -33,33 +32,31 @@ export async function POST() {
     return Response.json({ error: 'Carrito vacío' }, { status: 400 });
   }
 
-  // Verificar stock de cada item
-  for (const item of carritoItems) {
-    if (item.productos.stock < item.cantidad) {
-      return Response.json(
-        { error: `Stock insuficiente para ${item.productos.nombre}` },
-        { status: 400 }
-      );
-    }
-  }
-
-  // Calcular total en el servidor (no confiar en el cliente)
+  // Calcular total en el servidor
   const total = carritoItems.reduce(
     (sum, item) => sum + item.productos.precio * item.cantidad,
     0
   );
 
-  // Crear la orden
-  const { data: orden, error: ordenError } = await supabase
-    .from('ordenes')
-    .insert({ usuario_id: user.id, total })
-    .select()
-    .single();
+  // Preparar items en formato JSON para el stored procedure
+  const items = carritoItems.map(item => ({
+    producto_id: item.producto_id,
+    cantidad: item.cantidad,
+  }));
 
-  if (ordenError) return Response.json({ error: ordenError.message }, { status: 500 });
+  // Ejecutar transacción atómica via stored procedure
+  const { data, error } = await supabase.rpc('crear_orden_completa', {
+    p_usuario_id: user.id,
+    p_items: items,
+    p_total: total,
+  });
 
-  // Vaciar el carrito
-  await supabase.from('carrito').delete().eq('usuario_id', user.id);
+  if (error) return Response.json({ error: error.message }, { status: 500 });
 
-  return Response.json(orden, { status: 201 });
+  const resultado = data?.[0];
+  if (!resultado?.success) {
+    return Response.json({ error: resultado?.error_msg ?? 'Error al crear la orden' }, { status: 400 });
+  }
+
+  return Response.json({ id: resultado.orden_id, total, estado: 'pendiente' }, { status: 201 });
 }

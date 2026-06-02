@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama — Franchus Jewelry</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f0e8;
+      padding: 32px;
+      color: #3a3228;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 28px;
+    }
+
+    .diagrama {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── bloques ── */
+    .bloque {
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+
+    .bloque__titulo {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bloque__contenido {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ── colores ── */
+    .capa-deploy       { background: #3a3228; border: 2px solid #c9a84c; }
+    .capa-deploy       .bloque__titulo { color: #c9a84c; }
+    .capa-deploy       .chip { background: #524840; color: #e8d5a3; border-color: #c9a84c; }
+
+    .capa-usuario      { background: #ffffff; border: 2px solid #d4b896; }
+    .capa-usuario      .bloque__titulo { color: #8a7060; }
+    .capa-usuario      .chip { background: #f5f0e8; color: #3a3228; border-color: #d4b896; }
+
+    .capa-next         { background: #fff8f0; border: 2px solid #c9a84c; }
+    .capa-next         .bloque__titulo { color: #c9a84c; }
+
+    .capa-estado       { background: #fdf6ec; border: 2px solid #e0b84a; }
+    .capa-estado       .bloque__titulo { color: #a07820; }
+    .capa-estado       .chip { background: #fff3d4; color: #7a5820; border-color: #e0b84a; }
+
+    .capa-componentes  { background: #ffffff; border: 2px solid #c9b89a; }
+    .capa-componentes  .bloque__titulo { color: #8a7060; }
+    .capa-componentes  .chip { background: #faf8f5; color: #3a3228; border-color: #c9b89a; }
+
+    .capa-datos        { background: #ede8e0; border: 2px solid #c9b89a; }
+    .capa-datos        .bloque__titulo { color: #8a7060; }
+    .capa-datos        .chip { background: #e2dbd0; color: #3a3228; border-color: #c9b89a; }
+
+    /* ── chip ── */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* ── sub-bloques dentro de Next ── */
+    .sub-fila {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .sub-bloque {
+      flex: 1;
+      min-width: 150px;
+      border-radius: 8px;
+      padding: 10px 14px;
+      border: 1.5px dashed;
+    }
+
+    .sub-bloque__titulo {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .sub-bloque__codigo {
+      font-family: 'Courier New', monospace;
+      font-size: 0.71rem;
+      line-height: 1.6;
+      color: #5a5048;
+    }
+
+    .sub-html   { background: #fff3e0; border-color: #ffb74d; }
+    .sub-html   .sub-bloque__titulo { color: #e65100; }
+
+    .sub-css    { background: #e8f4fd; border-color: #64b5f6; }
+    .sub-css    .sub-bloque__titulo { color: #1565c0; }
+
+    .sub-logica { background: #f3e5f5; border-color: #ce93d8; }
+    .sub-logica .sub-bloque__titulo { color: #6a1b9a; }
+
+    /* ── flechas verticales ── */
+    .flecha-v {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-self: center;
+      padding: 2px 0;
+    }
+    .flecha-v .linea {
+      width: 2px;
+      height: 18px;
+      background: #c9a84c;
+    }
+    .flecha-v .etiqueta {
+      font-size: 0.6rem;
+      color: #c9a84c;
+      letter-spacing: 0.08em;
+      background: #f5f0e8;
+      padding: 1px 8px;
+      border-radius: 4px;
+    }
+    .flecha-v .punta {
+      width: 0; height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid #c9a84c;
+    }
+
+    /* ── deploy ── */
+    .deploy-fila {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      row-gap: 10px;
+    }
+    .deploy-paso {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .deploy-icono  { font-size: 1.5rem; }
+    .deploy-label  { font-size: 0.67rem; color: #e8d5a3; letter-spacing: 0.06em; text-align: center; }
+    .deploy-sub    { font-size: 0.58rem; color: #9a8878; text-align: center; }
+
+    .flecha-h {
+      display: flex;
+      align-items: center;
+    }
+    .flecha-h .linea { height: 2px; width: 20px; background: #c9a84c; }
+    .flecha-h .punta {
+      width: 0; height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 9px solid #c9a84c;
+    }
+    .flecha-h .etiqueta {
+      font-size: 0.58rem;
+      color: #c9a84c;
+      padding: 0 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Franchus Jewelry — Arquitectura de la Aplicación</h1>
+
+<div class="diagrama">
+
+  <!-- ① CI/CD -->
+  <div class="bloque capa-deploy">
+    <div class="bloque__titulo">① CI/CD — Flujo de deploy</div>
+    <div class="deploy-fila">
+
+      <div class="deploy-paso">
+        <div class="deploy-icono">💻</div>
+        <div class="deploy-label">Código local</div>
+        <div class="deploy-sub">VS Code</div>
+      </div>
+
+      <div class="flecha-h">
+        <div class="linea"></div>
+        <div class="etiqueta">git push</div>
+        <div class="linea"></div>
+        <div class="punta"></div>
+      </div>
+
+      <div class="deploy-paso">
+        <div class="deploy-icono">🐙</div>
+        <div class="deploy-label">GitHub</div>
+        <div class="deploy-sub">pw-e-commerce</div>
+      </div>
+
+      <div class="flecha-h">
+        <div class="linea"></div>
+        <div class="etiqueta">pipeline automático</div>
+        <div class="linea"></div>
+        <div class="punta"></div>
+      </div>
+
+      <div class="deploy-paso">
+        <div class="deploy-icono">⚡</div>
+        <div class="deploy-label">Vercel</div>
+        <div class="deploy-sub">build + deploy</div>
+      </div>
+
+      <div class="flecha-h">
+        <div class="linea"></div>
+        <div class="linea"></div>
+        <div class="punta"></div>
+      </div>
+
+      <div class="deploy-paso">
+        <div class="deploy-icono">🌐</div>
+        <div class="deploy-label">URL pública</div>
+        <div class="deploy-sub">franchus.vercel.app</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flecha-v">
+    <div class="linea"></div>
+    <div class="etiqueta">HTTP request</div>
+    <div class="linea"></div>
+    <div class="punta"></div>
+  </div>
+
+  <!-- ② Usuario -->
+  <div class="bloque capa-usuario">
+    <div class="bloque__titulo">② Usuario & Navegador</div>
+    <div class="bloque__contenido">
+      <span class="chip">👤 Usuario</span>
+      <span class="chip">🖥️ Navegador (Chrome / Safari)</span>
+      <span class="chip">🖱️ Clicks, búsqueda, carrito, checkout</span>
+      <span class="chip">📱 Responsive — mobile & desktop</span>
+    </div>
+  </div>
+
+  <div class="flecha-v">
+    <div class="linea"></div>
+    <div class="etiqueta">renderiza</div>
+    <div class="linea"></div>
+    <div class="punta"></div>
+  </div>
+
+  <!-- ③ Next.js -->
+  <div class="bloque capa-next">
+    <div class="bloque__titulo">③ Next.js — Separación de responsabilidades</div>
+    <div class="sub-fila">
+
+      <div class="sub-bloque sub-html">
+        <div class="sub-bloque__titulo">🏗️ Estructura — HTML / JSX</div>
+        <div class="sub-bloque__codigo">
+          app/layout.js<br>
+          app/page.js<br>
+          components/*.jsx<br>
+          <br>
+          &lt;header&gt; &lt;nav&gt; &lt;main&gt;<br>
+          &lt;section&gt; &lt;article&gt; &lt;footer&gt;
+        </div>
+      </div>
+
+      <div class="sub-bloque sub-css">
+        <div class="sub-bloque__titulo">🎨 Estilos — CSS</div>
+        <div class="sub-bloque__codigo">
+          app/globals.css<br>
+          <br>
+          Variables CSS<br>
+          Flexbox / Grid<br>
+          @media responsive<br>
+          Animaciones
+        </div>
+      </div>
+
+      <div class="sub-bloque sub-logica">
+        <div class="sub-bloque__titulo">⚙️ Lógica — React / JS</div>
+        <div class="sub-bloque__codigo">
+          useState → estado<br>
+          useEffect → efectos<br>
+          useCallback → handlers<br>
+          props → datos entre comp.<br>
+          'use client' → interactividad
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flecha-v">
+    <div class="linea"></div>
+    <div class="etiqueta">estado baja por props</div>
+    <div class="linea"></div>
+    <div class="punta"></div>
+  </div>
+
+  <!-- ④ Estado -->
+  <div class="bloque capa-estado">
+    <div class="bloque__titulo">④ Estado global — vive en page.js, se pasa como props a los componentes</div>
+    <div class="bloque__contenido">
+      <span class="chip">🛒 carrito[ ]</span>
+      <span class="chip">📂 catalogoAbierto</span>
+      <span class="chip">🏷️ categoriaActiva</span>
+      <span class="chip">🔍 query (búsqueda)</span>
+      <span class="chip">🖼️ productoModal</span>
+      <span class="chip">💳 checkoutAbierto</span>
+    </div>
+  </div>
+
+  <div class="flecha-v">
+    <div class="linea"></div>
+    <div class="etiqueta">props → re-render</div>
+    <div class="linea"></div>
+    <div class="punta"></div>
+  </div>
+
+  <!-- ⑤ Componentes -->
+  <div class="bloque capa-componentes">
+    <div class="bloque__titulo">⑤ Componentes — cada uno tiene una sola responsabilidad</div>
+    <div class="bloque__contenido">
+      <span class="chip">📢 Marquee</span>
+      <span class="chip">🧭 Navbar</span>
+      <span class="chip">🖼️ Hero</span>
+      <span class="chip">⭐ Favoritos</span>
+      <span class="chip">📦 ProductSection</span>
+      <span class="chip">🃏 ProductCard</span>
+      <span class="chip">🛒 CarritoPanel</span>
+      <span class="chip">🧾 CarritoItem</span>
+      <span class="chip">🔍 ModalProducto</span>
+      <span class="chip">💳 ModalCheckout</span>
+      <span class="chip">🦶 Footer</span>
+    </div>
+  </div>
+
+  <div class="flecha-v">
+    <div class="linea"></div>
+    <div class="etiqueta">lee / persiste</div>
+    <div class="linea"></div>
+    <div class="punta"></div>
+  </div>
+
+  <!-- ⑥ Datos -->
+  <div class="bloque capa-datos">
+    <div class="bloque__titulo">⑥ Datos</div>
+    <div class="bloque__contenido">
+      <span class="chip">📋 data/productos.js — 10 productos con nombre, precio, imagen, categoría y descripción</span>
+      <span class="chip">💾 localStorage — carrito persistente entre recargas (clave: franchus-carrito)</span>
+      <span class="chip">🖼️ public/catalogo/ — imágenes estáticas servidas por Next.js</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
