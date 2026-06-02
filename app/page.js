@@ -59,24 +59,16 @@ export default function Page() {
 
     cargarProductos();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const user = session?.user ?? null;
-      setUsuario(user);
-      if (user) {
-        cargarCarritoSupabase(user.id);
-      } else {
-        cargarCarritoLocal();
-      }
-    }).catch(() => cargarCarritoLocal());
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         const user = session?.user ?? null;
         setUsuario(user);
         if (user) {
           await cargarCarritoSupabase(user.id);
-        } else {
+        } else if (event === 'SIGNED_OUT') {
           setCarrito([]);
+          cargarCarritoLocal();
+        } else if (event === 'INITIAL_SESSION' && !user) {
           cargarCarritoLocal();
         }
       }
@@ -118,20 +110,13 @@ export default function Page() {
     setCarritoAbierto(true);
 
     if (usuario) {
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from('carrito')
-        .insert({ usuario_id: usuario.id, producto_id: producto.id, cantidad: nuevaCantidad });
-
-      if (insertError) console.error('Carrito insert error:', insertError.code, insertError.message);
-      if (insertError?.code === '23505') {
-        await supabase
-          .from('carrito')
-          .update({ cantidad: nuevaCantidad })
-          .eq('usuario_id', usuario.id)
-          .eq('producto_id', producto.id);
-      }
-    } else {
-      console.log('usuario es null, no se guarda');
+        .upsert(
+          { usuario_id: usuario.id, producto_id: producto.id, cantidad: nuevaCantidad },
+          { onConflict: 'usuario_id,producto_id' }
+        );
+      if (error) console.error('Carrito upsert error:', error.message);
     }
   }, [usuario, carrito]);
 
