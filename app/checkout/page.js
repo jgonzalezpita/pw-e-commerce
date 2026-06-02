@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -8,7 +8,7 @@ function formatPrecio(n) {
   return '$' + Number(n).toLocaleString('es-AR');
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const ordenId = searchParams.get('orden');
@@ -51,7 +51,6 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Error al procesar pago');
-      // Semana 13: redirigirá a Mercado Pago
       alert('Integración con Mercado Pago disponible en Semana 13. Orden lista para pagar.');
     } catch (err) {
       setError(err.message);
@@ -145,5 +144,17 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="checkout-page">
+        <div className="checkout-loading">Cargando...</div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
