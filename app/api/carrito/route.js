@@ -1,5 +1,33 @@
 import { createSupabaseServer } from '@/lib/supabase-server';
 
+export async function GET() {
+  const supabase = await createSupabaseServer();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return Response.json([], { status: 200 });
+
+  const { data: items, error } = await supabase
+    .from('carrito')
+    .select('producto_id, cantidad')
+    .eq('usuario_id', user.id);
+
+  if (error || !items?.length) return Response.json([], { status: 200 });
+
+  const { data: productos } = await supabase.from('productos').select();
+  const catalogo = productos ?? [];
+
+  const carrito = items
+    .map(item => {
+      const prod = catalogo.find(p => p.id === item.producto_id);
+      return prod
+        ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad }
+        : null;
+    })
+    .filter(Boolean);
+
+  return Response.json(carrito);
+}
+
 export async function POST(request) {
   const supabase = await createSupabaseServer();
 

@@ -40,26 +40,15 @@ export default function Page() {
       } catch (_) {}
     }
 
-    // createBrowserClient ya incluye el JWT desde las cookies en cada query —
-    // no hace falta getUser() extra; onAuthStateChange garantiza sesión válida
-    async function cargarCarritoSupabase(userId) {
-      const { data, error } = await supabase
-        .from('carrito')
-        .select('producto_id, cantidad')
-        .eq('usuario_id', userId);
-
-      if (error || !data) return;
-
-      const { data: prods } = await supabase.from('productos').select();
-      const catalogo = prods || productosFallback;
-      setCarrito(
-        data
-          .map(item => {
-            const prod = catalogo.find(p => p.id === item.producto_id);
-            return prod ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad } : null;
-          })
-          .filter(Boolean)
-      );
+    // Carga el carrito desde el servidor — el server lee las cookies correctamente
+    // y evita cualquier problema de JWT en el cliente (ej. en refresh de página)
+    async function cargarCarritoSupabase() {
+      try {
+        const res = await fetch('/api/carrito');
+        if (!res.ok) return;
+        const items = await res.json();
+        setCarrito(items);
+      } catch (_) {}
     }
 
     cargarProductos();
@@ -69,7 +58,7 @@ export default function Page() {
         const user = session?.user ?? null;
         setUsuario(user);
         if (user) {
-          await cargarCarritoSupabase(user.id);
+          await cargarCarritoSupabase();
         } else if (event === 'SIGNED_OUT') {
           // Solo limpiar al cerrar sesión explícitamente; INITIAL_SESSION sin user
           // ya tiene el carrito de localStorage via lazy initializer
