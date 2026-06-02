@@ -18,7 +18,14 @@ export default function Page() {
   const [productos, setProductos] = useState(productosFallback);
 
   // ── Carrito ──────────────────────────────────────────────────────────────
-  const [carrito, setCarrito] = useState([]);
+  // Lazy initializer: lee localStorage en el primer render para no sobreescribirlo
+  const [carrito, setCarrito] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('franchus-carrito');
+      return saved ? JSON.parse(saved) : [];
+    } catch (_) { return []; }
+  });
   const [carritoAbierto, setCarritoAbierto] = useState(false);
   const [checkoutAbierto, setCheckoutAbierto] = useState(false);
 
@@ -33,35 +40,26 @@ export default function Page() {
       } catch (_) {}
     }
 
+    // createBrowserClient ya incluye el JWT desde las cookies en cada query —
+    // no hace falta getUser() extra; onAuthStateChange garantiza sesión válida
     async function cargarCarritoSupabase(userId) {
-      // getUser() valida la sesión con el servidor y refresca el token si es necesario
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || user.id !== userId) return;
-
       const { data, error } = await supabase
         .from('carrito')
         .select('producto_id, cantidad')
         .eq('usuario_id', userId);
 
-      if (error) return;
+      if (error || !data) return;
 
-      if (data && data.length > 0) {
-        const { data: prods } = await supabase.from('productos').select();
-        const catalogo = prods || productosFallback;
-        setCarrito(data.map(item => {
-          const prod = catalogo.find(p => p.id === item.producto_id);
-          return prod ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad } : null;
-        }).filter(Boolean));
-      } else {
-        setCarrito([]);
-      }
-    }
-
-    function cargarCarritoLocal() {
-      try {
-        const guardado = localStorage.getItem('franchus-carrito');
-        if (guardado) setCarrito(JSON.parse(guardado));
-      } catch (_) {}
+      const { data: prods } = await supabase.from('productos').select();
+      const catalogo = prods || productosFallback;
+      setCarrito(
+        data
+          .map(item => {
+            const prod = catalogo.find(p => p.id === item.producto_id);
+            return prod ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad } : null;
+          })
+          .filter(Boolean)
+      );
     }
 
     cargarProductos();
@@ -73,10 +71,9 @@ export default function Page() {
         if (user) {
           await cargarCarritoSupabase(user.id);
         } else if (event === 'SIGNED_OUT') {
+          // Solo limpiar al cerrar sesión explícitamente; INITIAL_SESSION sin user
+          // ya tiene el carrito de localStorage via lazy initializer
           setCarrito([]);
-          cargarCarritoLocal();
-        } else if (event === 'INITIAL_SESSION' && !user) {
-          cargarCarritoLocal();
         }
       }
     );
