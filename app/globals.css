@@ -1706,13 +1706,17 @@ section.productos {
 }
 
 .navbar__auth-btn--admin {
-    color: var(--color-gris);
-    font-size: 0.62rem;
-    opacity: 0.6;
+    background: var(--color-oro);
+    color: white;
+    border-radius: 6px;
+    padding: 0.35rem 0.8rem;
+    font-weight: 600;
+    font-size: 0.82rem;
 }
 
 .navbar__auth-btn--admin:hover {
-    opacity: 1;
+    background: #c8972a;
+    color: white;
 }
 
 

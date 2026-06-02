@@ -121,7 +121,7 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
             <>
               {rolUsuario === 'admin' && (
                 <Link href="/admin" className="navbar__auth-btn navbar__auth-btn--admin">
-                  Admin
+                  ⚙ Panel admin
                 </Link>
               )}
               <Link href="/ordenes" className="navbar__auth-btn">
