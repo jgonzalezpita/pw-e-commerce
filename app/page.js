@@ -35,10 +35,16 @@ export default function Page() {
     }
 
     async function cargarCarritoSupabase(userId) {
-      const { data } = await supabase
+      // getUser() valida la sesión con el servidor y refresca el token si es necesario
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || user.id !== userId) return;
+
+      const { data, error } = await supabase
         .from('carrito')
         .select('producto_id, cantidad')
         .eq('usuario_id', userId);
+
+      if (error) return;
 
       if (data && data.length > 0) {
         const { data: prods } = await supabase.from('productos').select();
@@ -47,6 +53,8 @@ export default function Page() {
           const prod = catalogo.find(p => p.id === item.producto_id);
           return prod ? { ...prod, imagen: prod.imagen_url || prod.imagen, cantidad: item.cantidad } : null;
         }).filter(Boolean));
+      } else {
+        setCarrito([]);
       }
     }
 
