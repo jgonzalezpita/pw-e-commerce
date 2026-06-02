@@ -22,11 +22,13 @@ export default async function AdminPage() {
   // Verificar que sea admin
   if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) redirect('/');
 
-  // Obtener todas las órdenes con datos de usuario (usando service role)
-  const { data: ordenes } = await supabaseAdmin
+  // Obtener todas las órdenes (usando service role para bypasear RLS)
+  const { data: ordenes, error } = await supabaseAdmin
     .from('ordenes')
-    .select('*, usuarios(email, nombre, apellido)')
+    .select('*')
     .order('creado_en', { ascending: false });
+
+  if (error) console.error('Admin ordenes error:', error);
 
   const totalVentas = ordenes?.reduce((sum, o) => sum + Number(o.total), 0) ?? 0;
 
@@ -59,8 +61,7 @@ export default async function AdminPage() {
           <thead>
             <tr>
               <th>#</th>
-              <th>Cliente</th>
-              <th>Email</th>
+              <th>Usuario ID</th>
               <th>Total</th>
               <th>Estado</th>
               <th>Fecha</th>
@@ -70,12 +71,7 @@ export default async function AdminPage() {
             {ordenes?.map(orden => (
               <tr key={orden.id}>
                 <td>{orden.id}</td>
-                <td>
-                  {orden.usuarios?.nombre
-                    ? `${orden.usuarios.nombre} ${orden.usuarios.apellido ?? ''}`
-                    : '—'}
-                </td>
-                <td>{orden.usuarios?.email ?? '—'}</td>
+                <td>{orden.usuario_id?.slice(0, 8)}...</td>
                 <td>{formatPrecio(orden.total)}</td>
                 <td>
                   <span className={`orden-card__estado orden-card__estado--${orden.estado}`}>
