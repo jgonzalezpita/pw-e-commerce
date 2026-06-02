@@ -33,7 +33,7 @@ export default function Page() {
   useEffect(() => {
     async function cargarProductos() {
       try {
-        const { data } = await supabase.from('productos').select();
+        const { data } = await supabase.from('productos').select().eq('activo', true);
         if (data && data.length > 0) {
           setProductos(data.map(p => ({ ...p, imagen: p.imagen_url || p.imagen })));
         }

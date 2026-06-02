@@ -2121,6 +2121,72 @@ section.productos {
     background: var(--color-beige);
 }
 
+/* Tabs */
+.admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--color-beige-mid); padding-bottom: 0; }
+.admin-tab { background: none; border: none; padding: 0.75rem 1.25rem; font-size: 0.95rem; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.2s; }
+.admin-tab:hover { color: var(--color-texto); }
+.admin-tab--activo { color: var(--color-oro); border-bottom-color: var(--color-oro); font-weight: 600; }
+
+/* Botones admin */
+.admin-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 6px; border: 1px solid var(--color-beige-mid); background: white; font-size: 0.85rem; cursor: pointer; transition: background 0.15s; }
+.admin-btn:hover { background: var(--color-beige); }
+.admin-btn--primary { background: var(--color-oro); color: white; border-color: var(--color-oro); font-weight: 600; }
+.admin-btn--primary:hover { background: #c8972a; }
+.admin-btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-btn--sm { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+.admin-btn--danger { border-color: #e74c3c; color: #e74c3c; }
+.admin-btn--danger:hover { background: #fdf2f2; }
+
+/* Select y acciones */
+.admin-select { padding: 0.35rem 0.5rem; border: 1px solid var(--color-beige-mid); border-radius: 5px; font-size: 0.82rem; background: white; cursor: pointer; }
+.admin-acciones-top { margin-bottom: 1rem; }
+.admin-loading { padding: 3rem; text-align: center; color: #888; }
+.admin-subtitulo { font-size: 1.1rem; font-weight: 600; margin: 0 0 1rem; color: var(--color-texto); }
+
+/* Tabla pequeña */
+.admin-tabla--sm { font-size: 0.82rem; }
+.admin-tabla--sm th, .admin-tabla--sm td { padding: 0.5rem 0.75rem; }
+.admin-fila--inactiva td { opacity: 0.45; }
+
+/* Inline edit */
+.admin-editable { cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; }
+.admin-editable:hover { color: var(--color-oro); }
+.admin-editable__icon { font-size: 0.7rem; opacity: 0.5; }
+.admin-input-inline { width: 90px; padding: 0.25rem 0.4rem; border: 1px solid var(--color-oro); border-radius: 4px; font-size: 0.85rem; }
+.admin-input-cantidad { width: 64px; padding: 0.35rem 0.4rem; border: 1px solid var(--color-beige-mid); border-radius: 5px; }
+
+/* Toggle activo */
+.admin-toggle { padding: 0.3rem 0.7rem; border-radius: 20px; border: none; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.admin-toggle--on  { background: #d4edda; color: #155724; }
+.admin-toggle--off { background: #f8d7da; color: #721c24; }
+
+/* Modal overlay */
+.admin-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.admin-modal { background: white; border-radius: 12px; padding: 2rem; width: 100%; max-width: 640px; max-height: 85vh; overflow-y: auto; position: relative; }
+.admin-modal__cerrar { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; line-height: 1; }
+.admin-modal__titulo { font-size: 1.3rem; margin: 0 0 1.25rem; color: var(--color-texto); }
+.admin-modal__seccion { margin-bottom: 1.25rem; }
+.admin-modal__seccion strong { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.admin-modal__vacio { color: #aaa; font-size: 0.85rem; font-style: italic; }
+.admin-modal__total { text-align: right; font-size: 1.1rem; border-top: 1px solid var(--color-beige-mid); padding-top: 0.75rem; margin-top: 0.75rem; }
+
+/* Formularios admin */
+.admin-form { display: flex; flex-direction: column; gap: 0.9rem; }
+.admin-form__section { border: 1px solid var(--color-beige-mid); border-radius: 8px; padding: 1rem; }
+.admin-form__section h3 { margin: 0 0 0.75rem; font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.admin-form__field { display: flex; flex-direction: column; gap: 0.3rem; }
+.admin-form__field label { font-size: 0.85rem; font-weight: 500; color: var(--color-texto); }
+.admin-form__field input, .admin-form__field select { padding: 0.55rem 0.75rem; border: 1px solid var(--color-beige-mid); border-radius: 6px; font-size: 0.9rem; }
+.admin-form__field input:focus, .admin-form__field select:focus { outline: none; border-color: var(--color-oro); }
+.admin-form__field--check label { flex-direction: row; align-items: center; gap: 0.5rem; cursor: pointer; }
+.admin-form__error { color: #e74c3c; font-size: 0.85rem; margin: 0; }
+.admin-form__item-row { display: flex; gap: 0.5rem; align-items: center; }
+.admin-form__item-row select { flex: 1; padding: 0.45rem 0.5rem; border: 1px solid var(--color-beige-mid); border-radius: 5px; font-size: 0.85rem; }
+
+/* Nueva orden */
+.admin-nueva-orden { max-width: 680px; }
+.admin-nueva-orden__total { text-align: right; font-size: 1.05rem; padding: 0.5rem 0; border-top: 1px solid var(--color-beige-mid); }
+
 /* ============================================================
    CHECKOUT
    ============================================================ */
