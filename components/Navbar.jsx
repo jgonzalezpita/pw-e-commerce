@@ -11,11 +11,13 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
   const wrapperRef = useRef(null);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (!usuario) { setRolUsuario(null); return; }
     fetch('/api/auth/rol')
       .then(r => r.json())
       .then(d => setRolUsuario(d.rol))
       .catch(() => {});
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [usuario]);
 
   useEffect(() => {
