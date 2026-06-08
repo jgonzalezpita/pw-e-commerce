@@ -58,8 +58,8 @@ export default function Page() {
         const user = session?.user ?? null;
         setUsuario(user);
         if (user) {
-          // Al hacer login, fusionar el carrito local con el de Supabase
-          if (event === 'SIGNED_IN') {
+          // Al hacer login (o al recargar con sesión activa), fusionar carrito local con Supabase
+          if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
             try {
               const saved = localStorage.getItem('franchus-carrito');
               const carritoLocal = saved ? JSON.parse(saved) : [];
