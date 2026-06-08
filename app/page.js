@@ -58,6 +58,29 @@ export default function Page() {
         const user = session?.user ?? null;
         setUsuario(user);
         if (user) {
+          // Al hacer login, fusionar el carrito local con el de Supabase
+          if (event === 'SIGNED_IN') {
+            try {
+              const saved = localStorage.getItem('franchus-carrito');
+              const carritoLocal = saved ? JSON.parse(saved) : [];
+              if (carritoLocal.length > 0) {
+                for (const item of carritoLocal) {
+                  const { data: existing } = await supabase
+                    .from('carrito')
+                    .select('cantidad')
+                    .eq('usuario_id', user.id)
+                    .eq('producto_id', item.id)
+                    .single();
+                  const nuevaCantidad = existing ? existing.cantidad + item.cantidad : item.cantidad;
+                  await supabase.from('carrito').upsert(
+                    { usuario_id: user.id, producto_id: item.id, cantidad: nuevaCantidad },
+                    { onConflict: 'usuario_id,producto_id' }
+                  );
+                }
+                localStorage.removeItem('franchus-carrito');
+              }
+            } catch (_) {}
+          }
           await cargarCarritoSupabase();
         } else if (event === 'SIGNED_OUT') {
           // Solo limpiar al cerrar sesión explícitamente; INITIAL_SESSION sin user
