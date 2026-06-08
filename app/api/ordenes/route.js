@@ -16,8 +16,9 @@ export async function GET() {
   return Response.json(data);
 }
 
-export async function POST() {
+export async function POST(request) {
   const supabase = await createSupabaseServer();
+  const { metodo_pago } = await request.json().catch(() => ({}));
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
@@ -58,5 +59,10 @@ export async function POST() {
     return Response.json({ error: resultado?.error_msg ?? 'Error al crear la orden' }, { status: 400 });
   }
 
-  return Response.json({ id: resultado.orden_id, total, estado: 'pendiente' }, { status: 201 });
+  const estadoInicial = metodo_pago === 'mercadopago' ? 'confirmado' : 'pendiente';
+  if (metodo_pago === 'mercadopago') {
+    await supabase.from('ordenes').update({ estado: 'confirmado' }).eq('id', resultado.orden_id);
+  }
+
+  return Response.json({ id: resultado.orden_id, total, estado: estadoInicial }, { status: 201 });
 }

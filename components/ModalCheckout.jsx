@@ -47,7 +47,11 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
     setError('');
     setProcesando(true);
     try {
-      const resOrden = await fetch('/api/ordenes', { method: 'POST' });
+      const resOrden = await fetch('/api/ordenes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metodo_pago: metodoPago }),
+      });
       const dataOrden = await resOrden.json();
       if (!resOrden.ok) {
         setError(dataOrden.error || 'Error al crear la orden');

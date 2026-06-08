@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const ESTADOS_ORDEN = ['pendiente', 'en preparación', 'enviado', 'entregado', 'cancelado'];
+const ESTADOS_ORDEN = ['pendiente', 'confirmado', 'pagada', 'en preparación', 'enviado', 'entregado', 'cancelado'];
 const CATEGORIAS    = ['aros', 'collares', 'pulseras'];
 
 function formatPrecio(n) { return '$' + Number(n).toLocaleString('es-AR'); }
