@@ -1,4 +1,7 @@
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { createSupabaseServer } from '@/lib/supabase-server';
+
+const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 
 export async function POST(request) {
   const supabase = await createSupabaseServer();
@@ -9,7 +12,6 @@ export async function POST(request) {
   const { orden_id } = await request.json();
   if (!orden_id) return Response.json({ error: 'orden_id requerido' }, { status: 400 });
 
-  // Verificar que la orden existe y pertenece al usuario
   const { data: orden, error: ordenError } = await supabase
     .from('ordenes')
     .select('*')
@@ -25,7 +27,6 @@ export async function POST(request) {
     return Response.json({ error: 'La orden ya fue procesada' }, { status: 400 });
   }
 
-  // Obtener items de la orden
   const { data: items } = await supabase
     .from('orden_items')
     .select('cantidad, precio_unitario, productos(nombre)')
@@ -35,23 +36,36 @@ export async function POST(request) {
     return Response.json({ error: 'La orden no tiene ítems' }, { status: 400 });
   }
 
-  // Estructura preparada para Mercado Pago (Semana 13)
-  const preferencia = {
-    items: items.map(item => ({
-      title: item.productos.nombre,
-      quantity: item.cantidad,
-      unit_price: Number(item.precio_unitario),
-      currency_id: 'ARS',
-    })),
-    payer: { email: user.email },
-    external_reference: String(orden_id),
-    notification_url: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/pagos/webhook`,
-  };
+  const appUrl = new URL(request.url).origin;
+  // back_urls solo funcionan con URLs públicas (Vercel). En localhost se omiten.
+  const isPublic = !appUrl.includes('localhost') && !appUrl.includes('127.0.0.1');
 
-  // Semana 13: aquí se llamará al SDK de Mercado Pago
-  // const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-  // const preference = await new Preference(mp).create({ body: preferencia });
-  // return Response.json({ payment_link: preference.init_point });
+  try {
+    const preference = await new Preference(mp).create({
+      body: {
+        items: items.map(item => ({
+          title: item.productos.nombre,
+          quantity: item.cantidad,
+          unit_price: Number(item.precio_unitario),
+          currency_id: 'ARS',
+        })),
+        payer: { email: user.email },
+        external_reference: String(orden_id),
+        notification_url: isPublic ? `${appUrl}/api/pagos/webhook` : undefined,
+        ...(isPublic && {
+          back_urls: {
+            success: `${appUrl}/ordenes?estado=aprobado`,
+            failure: `${appUrl}/ordenes?estado=rechazado`,
+            pending: `${appUrl}/ordenes?estado=pendiente`,
+          },
+          auto_return: 'approved',
+        }),
+      },
+    });
 
-  return Response.json({ preferencia, mensaje: 'Estructura lista para Mercado Pago' });
+    return Response.json({ payment_link: preference.init_point });
+  } catch (err) {
+    console.error('MP crear-preferencia error:', err);
+    return Response.json({ error: err.message ?? 'Error al crear preferencia de pago' }, { status: 500 });
+  }
 }

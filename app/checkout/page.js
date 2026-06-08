@@ -51,7 +51,7 @@ function CheckoutContent() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Error al procesar pago');
-      alert('Integración con Mercado Pago disponible en Semana 13. Orden lista para pagar.');
+      window.location.href = data.payment_link;
     } catch (err) {
       setError(err.message);
     } finally {

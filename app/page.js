@@ -238,14 +238,7 @@ export default function Page() {
         <ModalCheckout
           carrito={carrito}
           onCerrar={() => setCheckoutAbierto(false)}
-          onConfirmar={async () => {
-            try {
-              const res = await fetch('/api/ordenes', { method: 'POST' });
-              if (!res.ok) {
-                const data = await res.json();
-                alert(data.error || 'Error al crear la orden');
-              }
-            } catch (_) {}
+          onConfirmar={() => {
             setCarrito([]);
             setCheckoutAbierto(false);
           }}

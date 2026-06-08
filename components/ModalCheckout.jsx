@@ -10,6 +10,7 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
   const [paso, setPaso] = useState(1);
   const [metodoPago, setMetodoPago] = useState('transferencia');
   const [error, setError] = useState('');
+  const [procesando, setProcesando] = useState(false);
   const [form, setForm] = useState({
     nombre: '', apellido: '', email: '', telefono: '',
     direccion: '', ciudad: '', provincia: '', cp: '',
@@ -40,6 +41,40 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
     }
     setError('');
     setPaso(2);
+  }
+
+  async function confirmarPedido() {
+    setError('');
+    setProcesando(true);
+    try {
+      const resOrden = await fetch('/api/ordenes', { method: 'POST' });
+      const dataOrden = await resOrden.json();
+      if (!resOrden.ok) {
+        setError(dataOrden.error || 'Error al crear la orden');
+        return;
+      }
+
+      if (metodoPago === 'mercadopago') {
+        const resPago = await fetch('/api/pagos/crear-preferencia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orden_id: dataOrden.id }),
+        });
+        const dataPago = await resPago.json();
+        if (!resPago.ok) {
+          setError(dataPago.error || 'Error al iniciar el pago');
+          return;
+        }
+        window.location.href = dataPago.payment_link;
+      } else {
+        setPaso(3);
+      }
+    } catch (err) {
+      console.error('Error confirmarPedido:', err);
+      setError('Error al procesar el pedido. Intentá de nuevo.');
+    } finally {
+      setProcesando(false);
+    }
   }
 
   const pasos = ['Envío', 'Pago', 'Confirmar'];
@@ -126,9 +161,12 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
               <span id="checkout-total-label">{totalLabel}</span>
               <span id="checkout-total-val">{formatPrecio(total)}</span>
             </div>
+            {error && <p className="checkout-error">{error}</p>}
             <div className="checkout-nav">
-              <button className="checkout-btn checkout-btn--outline" onClick={() => setPaso(1)}>Volver</button>
-              <button className="checkout-btn" onClick={() => setPaso(3)}>Confirmar pedido</button>
+              <button className="checkout-btn checkout-btn--outline" onClick={() => setPaso(1)} disabled={procesando}>Volver</button>
+              <button className="checkout-btn" onClick={confirmarPedido} disabled={procesando}>
+                {procesando ? 'Procesando...' : 'Confirmar pedido'}
+              </button>
             </div>
           </div>
         )}
