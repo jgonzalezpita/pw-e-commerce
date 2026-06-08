@@ -2,8 +2,12 @@
 
 import Image from 'next/image';
 
+const PLACEHOLDER = 'https://placehold.co/400x400?text=Sin+imagen';
+
 function getHoverSrc(src) {
+  if (!src) return PLACEHOLDER;
   const dot = src.lastIndexOf('.');
+  if (dot === -1) return src;
   return src.slice(0, dot) + '-m' + src.slice(dot);
 }
 
@@ -13,6 +17,7 @@ function toCardId(nombre) {
 
 export default function ProductCard({ producto, onProductoClick, onAgregar }) {
   const { nombre, precio, imagen, categoria } = producto;
+  const imgSrc = imagen || PLACEHOLDER;
   const hoverSrc = getHoverSrc(imagen);
 
   function formatPrecio(n) {
@@ -29,7 +34,7 @@ export default function ProductCard({ producto, onProductoClick, onAgregar }) {
     >
       <figure className="card__img-wrapper">
         <Image
-          src={imagen}
+          src={imgSrc}
           alt={nombre}
           fill
           className="card__img"

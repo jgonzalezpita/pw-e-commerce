@@ -205,7 +205,7 @@ export default function Page() {
 
   const filtrar = (cat) =>
     productos.filter(p => {
-      if (p.categoria !== cat) return false;
+      if (!p.nombre || p.categoria !== cat) return false;
       const pasaCat = !categoriaActiva || p.categoria === categoriaActiva;
       const pasaQ   = !query || p.nombre.toLowerCase().includes(query.toLowerCase());
       return pasaCat && pasaQ;
