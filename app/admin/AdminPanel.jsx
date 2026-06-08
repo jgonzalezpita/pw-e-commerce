@@ -188,7 +188,12 @@ function ProductosTab() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [campo]: valor }),
     });
-    if (res.ok) setProductos(prev => prev.map(p => p.id === id ? { ...p, [campo]: valor } : p));
+    if (res.ok) {
+      setProductos(prev => prev.map(p => p.id === id ? { ...p, [campo]: valor } : p));
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(`Error al actualizar: ${data.error ?? res.status}`);
+    }
     setEditando(null);
   }
 
