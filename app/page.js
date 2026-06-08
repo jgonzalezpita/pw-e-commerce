@@ -285,7 +285,7 @@ export default function Page() {
 
         <section className="banner">
           <p className="banner__quote">
-            "Cada joya cuenta una historia.<br /><em>La tuya merece brillar.</em>"
+            &ldquo;Cada joya cuenta una historia.<br /><em>La tuya merece brillar.</em>&rdquo;
           </p>
         </section>
       </main>
