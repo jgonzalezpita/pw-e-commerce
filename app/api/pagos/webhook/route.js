@@ -1,8 +1,6 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
-const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-
 // Usa service role para actualizar sin restricciones de RLS
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -10,6 +8,14 @@ const supabase = createClient(
 );
 
 export async function POST(request) {
+  // MP siempre espera 200; si falta el token no rompemos, solo registramos.
+  const accessToken = process.env.MP_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error('Webhook MP: falta MP_ACCESS_TOKEN en el entorno.');
+    return new Response('ok', { status: 200 });
+  }
+  const mp = new MercadoPagoConfig({ accessToken });
+
   const { searchParams } = new URL(request.url);
   const topic = searchParams.get('topic') || searchParams.get('type');
   const id = searchParams.get('id') || searchParams.get('data.id');

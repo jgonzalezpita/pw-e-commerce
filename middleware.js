@@ -22,7 +22,7 @@ export async function middleware(request) {
   );
 
   // Sincroniza la sesión de Supabase en cookies (necesario para Server Components)
-  await supabase.auth.getUser();
+  await supabase.auth.getSession();
 
   return response;
 }

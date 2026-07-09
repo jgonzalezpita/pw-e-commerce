@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { esEmailValido, textoNoVacio } from '@/lib/validaciones';
 import Link from 'next/link';
 
 export default function Registro() {
@@ -18,6 +19,14 @@ export default function Registro() {
     e.preventDefault();
     setError('');
 
+    if (!textoNoVacio(nombre, 2)) {
+      setError('Ingresá tu nombre.');
+      return;
+    }
+    if (!esEmailValido(email)) {
+      setError('Ingresá un email válido.');
+      return;
+    }
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
+import { validarEnvio } from '@/lib/validaciones';
 
 function formatPrecio(n) {
   return '$' + n.toLocaleString('es-AR');
@@ -10,6 +11,7 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
   const [paso, setPaso] = useState(1);
   const [metodoPago, setMetodoPago] = useState('transferencia');
   const [error, setError] = useState('');
+  const [errores, setErrores] = useState({});
   const [procesando, setProcesando] = useState(false);
   const [form, setForm] = useState({
     nombre: '', apellido: '', email: '', telefono: '',
@@ -31,14 +33,19 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
   const totalLabel = metodoPago === 'transferencia' ? 'Total (con 20% OFF)' : 'Total';
 
   function handleInput(e) {
-    setForm(prev => ({ ...prev, [e.target.id]: e.target.value }));
+    const { id, value } = e.target;
+    setForm(prev => ({ ...prev, [id]: value }));
+    if (errores[id]) setErrores(prev => { const p = { ...prev }; delete p[id]; return p; });
   }
 
   function pasoSiguiente() {
-    if (!form.nombre.trim() || !form.email.trim() || !form.direccion.trim()) {
-      setError('Por favor completá los campos obligatorios (*)');
+    const errs = validarEnvio(form);
+    if (Object.keys(errs).length > 0) {
+      setErrores(errs);
+      setError('Revisá los campos marcados en rojo.');
       return;
     }
+    setErrores({});
     setError('');
     setPaso(2);
   }
@@ -124,13 +131,16 @@ export default function ModalCheckout({ carrito, onCerrar, onConfirmar }) {
                 <div key={f.id} className={`checkout-field${f.full ? ' checkout-field--full' : ''}`}>
                   <label className="checkout-field__label" htmlFor={f.id}>{f.label}</label>
                   <input
-                    className={`checkout-field__input${f.req && !form[f.id].trim() && error ? ' error' : ''}`}
+                    className={`checkout-field__input${errores[f.id] ? ' error' : ''}`}
                     id={f.id}
-                    type={f.id === 'email' ? 'email' : 'text'}
+                    type={f.id === 'email' ? 'email' : f.id === 'telefono' ? 'tel' : 'text'}
+                    inputMode={f.id === 'telefono' || f.id === 'cp' ? 'numeric' : undefined}
                     placeholder={f.placeholder}
                     value={form[f.id]}
                     onChange={handleInput}
+                    aria-invalid={errores[f.id] ? 'true' : 'false'}
                   />
+                  {errores[f.id] && <span className="checkout-field__error">{errores[f.id]}</span>}
                 </div>
               ))}
             </div>

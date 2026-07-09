@@ -8,7 +8,10 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
   const [sugerencias, setSugerencias] = useState([]);
   const [mostrarSug, setMostrarSug] = useState(false);
   const [rolUsuario, setRolUsuario] = useState(null);
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const wrapperRef = useRef(null);
+
+  const cerrarMenu = () => setMenuAbierto(false);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -63,10 +66,10 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
   return (
     <header className="navbar">
       <div className="navbar__container">
-        <a href="#" className="navbar__logo" onClick={e => { e.preventDefault(); onQuery(''); onCategoria && onCategoria(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+        <a href="#" className="navbar__logo" onClick={e => { e.preventDefault(); onQuery(''); onCategoria && onCategoria(null); cerrarMenu(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
           Franchus
         </a>
-        <div className="navbar__derecha">
+        <div className={`navbar__derecha${menuAbierto ? ' navbar__derecha--abierto' : ''}`}>
           <div className="busqueda-wrapper" ref={wrapperRef}>
             <div className="busqueda">
               <svg className="busqueda__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -103,6 +106,7 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
                     onClick={e => {
                       e.preventDefault();
                       onCategoria(cat);
+                      cerrarMenu();
                       setTimeout(() => {
                         const el = document.getElementById(cat);
                         if (el) {
@@ -119,30 +123,34 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
             </ul>
           </nav>
 
-          {usuario ? (
-            <>
-              {rolUsuario === 'admin' && (
-                <Link href="/admin" className="navbar__auth-btn navbar__auth-btn--admin">
-                  ⚙ Panel admin
+          <div className="navbar__auth">
+            {usuario ? (
+              <>
+                {rolUsuario === 'admin' && (
+                  <Link href="/admin" className="navbar__auth-btn navbar__auth-btn--admin" onClick={cerrarMenu}>
+                    ⚙ Panel admin
+                  </Link>
+                )}
+                <Link href="/ordenes" className="navbar__auth-btn" onClick={cerrarMenu}>
+                  Mis órdenes
                 </Link>
-              )}
-              <Link href="/ordenes" className="navbar__auth-btn">
-                Mis órdenes
+                <button
+                  className="navbar__auth-btn"
+                  onClick={() => { cerrarMenu(); handleLogout(); }}
+                  title={`Sesión: ${usuario.email}`}
+                >
+                  Salir
+                </button>
+              </>
+            ) : (
+              <Link href="/auth/login" className="navbar__auth-btn" onClick={cerrarMenu}>
+                Ingresar
               </Link>
-              <button
-                className="navbar__auth-btn"
-                onClick={handleLogout}
-                title={`Sesión: ${usuario.email}`}
-              >
-                Salir
-              </button>
-            </>
-          ) : (
-            <Link href="/auth/login" className="navbar__auth-btn">
-              Ingresar
-            </Link>
-          )}
+            )}
+          </div>
+        </div>
 
+        <div className="navbar__acciones">
           <button className="carrito__btn" onClick={onAbrirCarrito} aria-label="Ver carrito">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
@@ -150,6 +158,15 @@ export default function Navbar({ categoriaActiva, onCategoria, query, onQuery, o
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
             <span className="carrito__badge">{carritoCount}</span>
+          </button>
+
+          <button
+            className={`navbar__toggle${menuAbierto ? ' navbar__toggle--activo' : ''}`}
+            onClick={() => setMenuAbierto(v => !v)}
+            aria-label="Abrir menú"
+            aria-expanded={menuAbierto}
+          >
+            <span></span><span></span><span></span>
           </button>
         </div>
       </div>

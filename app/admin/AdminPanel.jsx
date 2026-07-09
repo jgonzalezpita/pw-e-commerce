@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { esPrecioValido, esStockValido } from '@/lib/validaciones';
 
 const ESTADOS_ORDEN = ['pendiente', 'confirmado', 'pagada', 'en preparación', 'enviado', 'entregado', 'cancelado'];
 const CATEGORIAS    = ['aros', 'collares', 'pulseras'];
@@ -183,6 +184,17 @@ function ProductosTab() {
   }
 
   async function actualizar(id, campo, valor) {
+    // Validar antes de enviar: no permitir precio <= 0 ni stock negativo
+    if (campo === 'precio' && !esPrecioValido(valor)) {
+      alert('El precio debe ser un número mayor a 0.');
+      setEditando(null);
+      return;
+    }
+    if (campo === 'stock' && !esStockValido(valor)) {
+      alert('El stock debe ser un número entero mayor o igual a 0.');
+      setEditando(null);
+      return;
+    }
     const res = await fetch(`/api/admin/productos/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -224,7 +236,7 @@ function ProductosTab() {
                 <td>{p.nombre}</td>
                 <td>
                   {editando?.id === p.id && editando?.campo === 'precio' ? (
-                    <input className="admin-input-inline" type="number" defaultValue={p.precio} autoFocus
+                    <input className="admin-input-inline" type="number" min="1" step="any" defaultValue={p.precio} autoFocus
                       onBlur={e  => actualizar(p.id, 'precio', Number(e.target.value))}
                       onKeyDown={e => e.key === 'Enter' && actualizar(p.id, 'precio', Number(e.target.value))}
                     />
@@ -236,7 +248,7 @@ function ProductosTab() {
                 </td>
                 <td>
                   {editando?.id === p.id && editando?.campo === 'stock' ? (
-                    <input className="admin-input-inline" type="number" defaultValue={p.stock} autoFocus
+                    <input className="admin-input-inline" type="number" min="0" step="1" defaultValue={p.stock} autoFocus
                       onBlur={e  => actualizar(p.id, 'stock', Number(e.target.value))}
                       onKeyDown={e => e.key === 'Enter' && actualizar(p.id, 'stock', Number(e.target.value))}
                     />
@@ -286,7 +298,9 @@ function FormProducto({ onCerrar, onGuardado }) {
 
   async function submit(e) {
     e.preventDefault();
-    if (!form.nombre || !form.precio) { setError('Nombre y precio son obligatorios'); return; }
+    if (!form.nombre.trim()) { setError('El nombre es obligatorio'); return; }
+    if (!esPrecioValido(form.precio)) { setError('El precio debe ser un número mayor a 0'); return; }
+    if (!esStockValido(form.stock)) { setError('El stock debe ser un entero mayor o igual a 0'); return; }
     setGuardando(true);
     const res = await fetch('/api/admin/productos', {
       method: 'POST',
@@ -313,7 +327,13 @@ function FormProducto({ onCerrar, onGuardado }) {
           ].map(([k, label, type]) => (
             <div key={k} className="admin-form__field">
               <label>{label}</label>
-              <input type={type} value={form[k]} onChange={e => set(k, e.target.value)} />
+              <input
+                type={type}
+                value={form[k]}
+                onChange={e => set(k, e.target.value)}
+                {...(k === 'precio' ? { min: '1', step: 'any' } : {})}
+                {...(k === 'stock' ? { min: '0', step: '1' } : {})}
+              />
             </div>
           ))}
           <div className="admin-form__field">

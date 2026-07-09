@@ -1,9 +1,18 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { createSupabaseServer } from '@/lib/supabase-server';
 
-const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-
 export async function POST(request) {
+  // Validar credenciales ANTES de tocar la base: evita el error críptico de MP
+  // cuando el token no está configurado en el entorno (ej. Vercel sin variables).
+  const accessToken = process.env.MP_ACCESS_TOKEN;
+  if (!accessToken) {
+    return Response.json(
+      { error: 'MercadoPago no está configurado (falta MP_ACCESS_TOKEN en el entorno).' },
+      { status: 500 }
+    );
+  }
+  const mp = new MercadoPagoConfig({ accessToken });
+
   const supabase = await createSupabaseServer();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -45,7 +54,7 @@ export async function POST(request) {
       body: {
         items: items.map(item => ({
           title: item.productos.nombre,
-          quantity: item.cantidad,
+          quantity: Number(item.cantidad),
           unit_price: Number(item.precio_unitario),
           currency_id: 'ARS',
         })),
@@ -63,9 +72,22 @@ export async function POST(request) {
       },
     });
 
-    return Response.json({ payment_link: preference.init_point });
+    // init_point sirve tanto para credenciales de prueba (paga un usuario/tarjeta
+    // de test, sin dinero real) como de producción. Con las nuevas credenciales de
+    // MercadoPago ambas empiezan con APP_USR-, así que no se distingue por el prefijo.
+    const paymentLink = preference.init_point ?? preference.sandbox_init_point;
+
+    return Response.json({ payment_link: paymentLink });
   } catch (err) {
     console.error('MP crear-preferencia error:', err);
-    return Response.json({ error: err.message ?? 'Error al crear preferencia de pago' }, { status: 500 });
+    // Mensaje más útil ante el típico "cruce de credenciales" (token de otra cuenta/app)
+    const msg = err?.message ?? 'Error al crear preferencia de pago';
+    const esAuth = /unauthorized|invalid.*token|credential/i.test(msg);
+    return Response.json(
+      { error: esAuth
+          ? 'MercadoPago rechazó las credenciales. Verificá que el Access Token sea válido y de la misma aplicación que la Public Key.'
+          : msg },
+      { status: 500 }
+    );
   }
 }

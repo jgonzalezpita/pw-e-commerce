@@ -1,15 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { esEmailValido } from '@/lib/validaciones';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [gracias, setGracias] = useState(false);
+  const [error, setError] = useState('');
 
   function handleSuscribir() {
+    if (!esEmailValido(email)) {
+      setError('Ingresá un email válido para suscribirte.');
+      return;
+    }
+    setError('');
     setGracias(true);
     setEmail('');
     setTimeout(() => setGracias(false), 3000);
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') handleSuscribir();
   }
 
   return (
@@ -44,15 +55,18 @@ export default function Footer() {
           ) : (
             <div className="novedades__form">
               <input
-                className="novedades__input"
+                className={`novedades__input${error ? ' novedades__input--error' : ''}`}
                 type="email"
                 placeholder="Tu email..."
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => { setEmail(e.target.value); if (error) setError(''); }}
+                onKeyDown={handleKeyDown}
+                aria-invalid={error ? 'true' : 'false'}
               />
               <button className="novedades__btn" onClick={handleSuscribir}>Suscribirme</button>
             </div>
           )}
+          {error && <p className="novedades__error">{error}</p>}
         </div>
       </div>
       <p className="footer__copy">&copy; 2026 Franchus Jewelry. Todos los derechos reservados.</p>
